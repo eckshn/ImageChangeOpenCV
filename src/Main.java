@@ -1,4 +1,8 @@
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -6,6 +10,9 @@ import javax.swing.SwingUtilities;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -13,7 +20,7 @@ public class Main {
 	public static void main(String[] args) {
 		//https://docs.opencv.org/master/javadoc/index.html
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		String picture = "src/drip.jpg";
+		String picture = "src/orange.jpg";
 		
 		Mat image = loadImage(picture);
 		Mat thresh = new Mat();
@@ -24,11 +31,11 @@ public class Main {
 		showImage(picture);
 		showImage("src/output/gray.jpg");
 		
-		Imgproc.threshold(grayscale, thresh, 180, 255, Imgproc.THRESH_BINARY_INV);
+		Imgproc.threshold(grayscale, thresh, 100, 255, Imgproc.THRESH_BINARY_INV);
 		saveImage(thresh, "src/output/thresh.jpg");
 		showImage("src/output/thresh.jpg");
 		
-		Mat kernel = Mat.ones(new int[] {5, 5}, 0);
+		Mat kernel = Mat.ones(new int[] {10, 10}, 0);
 		Mat opening = new Mat();
 		Mat closing = new Mat();
 		Imgproc.morphologyEx(thresh, opening, Imgproc.MORPH_OPEN, kernel);
@@ -36,6 +43,16 @@ public class Main {
 		saveImage(closing, "src/output/closing.jpg");
 		showImage("src/output/closing.jpg");
 		
+		List<MatOfPoint> contours = new ArrayList<>();
+		Mat hierarchey = new Mat();
+		Imgproc.findContours(closing, contours, hierarchey, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+		Scalar color = new Scalar(0, 0, 255);
+		int index = findLargestArea(contours);
+		contours.remove(index);
+		index = findLargestArea(contours);
+		Imgproc.drawContours(image, contours, index, color, 2) ;
+		saveImage(image, "src/output/lines.jpg");
+		showImage("src/output/lines.jpg");
 	}
 	
 	//Loads the given image as a Mat(Matrix Representation)
@@ -46,6 +63,18 @@ public class Main {
 	//Saves the loaded image
 	public static void saveImage(Mat imageMatrix, String targetPath) {
 		Imgcodecs.imwrite(targetPath, imageMatrix);
+	}
+	
+	public static int findLargestArea(List<MatOfPoint> contours) {
+		Mat max = contours.get(0);
+		int index = 0;
+		for(int i = 0; i < contours.size(); i++) {
+			if(Imgproc.contourArea(max) < Imgproc.contourArea(contours.get(i))) {
+				max = contours.get(i);
+				index = i;
+			}
+		}
+		return index;
 	}
 	
 	private static void showImage(final String fileName)
