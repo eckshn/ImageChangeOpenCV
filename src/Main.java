@@ -11,6 +11,7 @@ import org.opencv.imgproc.Imgproc;
 
 public class Main {
 	public static void main(String[] args) {
+		//https://docs.opencv.org/master/javadoc/index.html
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		String picture = "src/drip.jpg";
 		
