@@ -1,6 +1,5 @@
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -11,7 +10,6 @@ import javax.swing.SwingUtilities;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -20,7 +18,7 @@ public class Main {
 	public static void main(String[] args) {
 		//https://docs.opencv.org/master/javadoc/index.html
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		String picture = "src/orange.jpg";
+		String picture = "src/shoe.jpg";
 		
 		Mat image = loadImage(picture);
 		Mat thresh = new Mat();
@@ -48,8 +46,8 @@ public class Main {
 		Imgproc.findContours(closing, contours, hierarchey, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE); //adds value to the contours list
 		Scalar color = new Scalar(0, 0, 255); //red
 		int index = findLargestArea(contours); //index of largest area
-		contours.remove(index); //remove it because largest area was the entire picture
-		index = findLargestArea(contours);
+		//contours.remove(index); //remove it because largest area was the entire picture
+		//index = findLargestArea(contours);
 		Imgproc.drawContours(image, contours, index, color, 2); //draws contours only at the index
 		saveImage(image, "src/output/lines.jpg");
 		showImage("src/output/lines.jpg");
