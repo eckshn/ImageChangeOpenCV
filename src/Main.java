@@ -45,12 +45,12 @@ public class Main {
 		
 		List<MatOfPoint> contours = new ArrayList<>();
 		Mat hierarchey = new Mat();
-		Imgproc.findContours(closing, contours, hierarchey, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-		Scalar color = new Scalar(0, 0, 255);
-		int index = findLargestArea(contours);
-		contours.remove(index);
+		Imgproc.findContours(closing, contours, hierarchey, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE); //adds value to the contours list
+		Scalar color = new Scalar(0, 0, 255); //red
+		int index = findLargestArea(contours); //index of largest area
+		contours.remove(index); //remove it because largest area was the entire picture
 		index = findLargestArea(contours);
-		Imgproc.drawContours(image, contours, index, color, 2) ;
+		Imgproc.drawContours(image, contours, index, color, 2); //draws contours only at the index
 		saveImage(image, "src/output/lines.jpg");
 		showImage("src/output/lines.jpg");
 	}
