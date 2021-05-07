@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfDouble;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -18,7 +19,7 @@ public class Main {
 	public static void main(String[] args) {
 		//https://docs.opencv.org/master/javadoc/index.html
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		String picture = "src/shoe.jpg";
+		String picture = "src/g.jpeg";
 		
 		Mat image = loadImage(picture);
 		Mat thresh = new Mat();
@@ -29,11 +30,11 @@ public class Main {
 		showImage(picture);
 		showImage("src/output/gray.jpg");
 		
-		Imgproc.threshold(grayscale, thresh, 100, 255, Imgproc.THRESH_BINARY_INV);
+		Imgproc.threshold(grayscale, thresh, 140, 255, Imgproc.THRESH_BINARY_INV);
 		saveImage(thresh, "src/output/thresh.jpg");
 		showImage("src/output/thresh.jpg");
 		
-		Mat kernel = Mat.ones(new int[] {10, 10}, 0);
+		Mat kernel = Mat.ones(new int[] {3, 3}, 0);
 		Mat opening = new Mat();
 		Mat closing = new Mat();
 		Imgproc.morphologyEx(thresh, opening, Imgproc.MORPH_OPEN, kernel);
@@ -62,6 +63,14 @@ public class Main {
 		Core.bitwise_and(temp, temp, object, mask);
 		saveImage(object, "src/output/object.jpg");
 		showImage("src/output/object.jpg");
+		
+		MatOfDouble mean = new MatOfDouble();
+		MatOfDouble dev = new MatOfDouble();
+		Core.meanStdDev(temp, mean, dev, mask);
+		double[] average = mean.toArray();
+		for(double x : average) {
+			System.out.println(x); //outputs average color as BGR
+		}
 	}
 	
 	//Loads the given image as a Mat(Matrix Representation)
